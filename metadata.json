@@ -1,0 +1,8 @@
+{
+  "name": "PH Mitra Sejahtera Bersama ",
+  "description": "Aplikasi koperasi simpan pinjam harian berbasis web app untuk kolektor lapangan.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}
