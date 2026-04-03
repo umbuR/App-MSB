@@ -101,5 +101,9 @@ export default function LoginPage() {
               <span className="font-medium">{error}</span>
             </div>
           )}
-
+</div>
+      </div>
+    </div>
+  );
+}
 
