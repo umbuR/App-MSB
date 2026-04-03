@@ -102,26 +102,4 @@ export default function LoginPage() {
             </div>
           )}
 
-          <div className="mt-8 bg-blue-50 p-5 rounded-xl border border-blue-100 text-sm">
-            <p className="font-bold text-blue-800 mb-3 text-center">Informasi Akun Demo</p>
-            <div className="space-y-2.5 text-blue-900">
-              <div className="flex justify-between items-center border-b border-blue-200/50 pb-2">
-                <span className="font-medium">Pimpinan:</span>
-                <span className="font-mono bg-white px-2 py-1 rounded shadow-sm text-xs">pimpinan@koperasi.com</span>
-              </div>
-              <div className="flex justify-between items-center border-b border-blue-200/50 pb-2">
-                <span className="font-medium">Kolektor:</span>
-                <span className="font-mono bg-white px-2 py-1 rounded shadow-sm text-xs">kolektor@koperasi.com</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="font-medium">Password:</span>
-                <span className="font-mono bg-white px-2 py-1 rounded shadow-sm text-xs">password123</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
