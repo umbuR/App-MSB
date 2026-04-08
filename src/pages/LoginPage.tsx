@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { db } from '../lib/db';
 import { useAuth } from '../contexts/AuthContext';
 import { Lock, Mail, AlertCircle } from 'lucide-react';
-import logoImg from '../public/Logo.png';
+
+const logoImg = '/Logo.png';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -101,7 +102,7 @@ export default function LoginPage() {
               <span className="font-medium">{error}</span>
             </div>
           )}
-</div>
+        </div>
       </div>
     </div>
   );

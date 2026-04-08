@@ -125,7 +125,6 @@ export default function PembayaranForm() {
                 <input
                   type="file"
                   accept="image/*"
-                  capture="environment"
                   className="hidden"
                   id="cameraInput-pembayaran"
                   onChange={handleFileChange}

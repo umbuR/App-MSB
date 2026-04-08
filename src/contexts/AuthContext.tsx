@@ -22,8 +22,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (usersCount === 0) {
           await db.users.bulkAdd([
             { email: 'pimpinan@koperasi.com', password: 'password123', role: 'pimpinan', name: 'Bapak Pimpinan' },
-            { email: 'kolektor@koperasi.com', password: 'password123', role: 'kolektor', name: 'Mas Kolektor' }
+            { email: 'kolektor@koperasi.com', password: 'password123', role: 'kolektor', name: 'Mas Kolektor' },
+            { email: 'rekap@koperasi.com', password: 'password123', role: 'rekap', name: 'Mbak Rekap' }
           ]);
+        } else {
+          // Ensure rekap user exists for existing databases
+          const rekapExists = await db.users.where('email').equals('rekap@koperasi.com').first();
+          if (!rekapExists) {
+            await db.users.add({ email: 'rekap@koperasi.com', password: 'password123', role: 'rekap', name: 'Mbak Rekap' });
+          }
         }
 
         // Check local storage for logged in user

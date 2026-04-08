@@ -12,8 +12,16 @@ import TransaksiForm from './pages/TransaksiForm';
 import AngsuranDetail from './pages/AngsuranDetail';
 import PembayaranForm from './pages/PembayaranForm';
 import StortingPage from './pages/StortingPage';
+import PengeluaranPage from './pages/PengeluaranPage';
+import TunaiPage from './pages/TunaiPage';
+import RekapitulasiPage from './pages/RekapitulasiPage';
+import UnitPage from './pages/UnitPage';
 import LoginPage from './pages/LoginPage';
 import ManageUsers from './pages/ManageUsers';
+import LaporanPinjamanPage from './pages/LaporanPinjamanPage';
+import LaporanRekapanPage from './pages/LaporanRekapanPage';
+import RekapanKecilPage from './pages/RekapanKecilPage';
+import RekapanBesarPage from './pages/RekapanBesarPage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -35,7 +43,15 @@ function AppRoutes() {
         <Route path="pencairan" element={<TransaksiForm />} />
         <Route path="pembayaran/:id" element={<PembayaranForm />} />
         <Route path="storting" element={<StortingPage />} />
+        <Route path="pengeluaran" element={<PengeluaranPage />} />
+        <Route path="tunai" element={<TunaiPage />} />
+        <Route path="rekapitulasi" element={<RekapitulasiPage />} />
+        <Route path="unit" element={<UnitPage />} />
         <Route path="pegawai" element={<ManageUsers />} />
+        <Route path="laporan-pinjaman" element={<LaporanPinjamanPage />} />
+        <Route path="laporan-rekapan" element={<LaporanRekapanPage />} />
+        <Route path="rekapan-kecil" element={<RekapanKecilPage />} />
+        <Route path="rekapan-besar" element={<RekapanBesarPage />} />
       </Route>
     </Routes>
   );

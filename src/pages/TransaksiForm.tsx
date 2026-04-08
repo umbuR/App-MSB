@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db } from '../lib/db';
 import { hitungSaldoAwal } from '../lib/logic';
-import { Camera, CheckCircle } from 'lucide-react';
+import { Camera, CheckCircle, Image as ImageIcon } from 'lucide-react';
 
 export default function TransaksiForm() {
   const navigate = useNavigate();
@@ -12,13 +12,11 @@ export default function TransaksiForm() {
     alamat: '',
     jumlah_hari: 30,
     permohonan_pinjaman: '',
-    acc_pinjaman: '',
-    paraf_acc: ''
+    acc_pinjaman: ''
   });
 
   const [photos, setPhotos] = useState({
     pencairan: null as string | null,
-    promise: null as string | null,
     ktp: null as string | null
   });
 
@@ -33,74 +31,83 @@ export default function TransaksiForm() {
     }
   };
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     
-    const accPinjaman = Number(formData.acc_pinjaman);
-    const saldoAwal = hitungSaldoAwal(accPinjaman);
-    
-    // Get GPS
-    let lat = 0, lng = 0;
     try {
-      const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
-      });
-      lat = pos.coords.latitude;
-      lng = pos.coords.longitude;
-    } catch (err) {
-      console.warn("GPS failed", err);
-    }
+      const accPinjaman = Number(formData.acc_pinjaman);
+      const saldoAwal = hitungSaldoAwal(accPinjaman);
+      
+      // Get GPS
+      let lat = 0, lng = 0;
+      try {
+        const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
+        });
+        lat = pos.coords.latitude;
+        lng = pos.coords.longitude;
+      } catch (err) {
+        console.warn("GPS failed", err);
+      }
 
-    const today = new Date();
-    const tglLunas = new Date(today);
-    tglLunas.setDate(tglLunas.getDate() + Number(formData.jumlah_hari));
+      const today = new Date();
+      const tglLunas = new Date(today);
+      tglLunas.setDate(tglLunas.getDate() + Number(formData.jumlah_hari));
 
-    const newTx = {
-      id: crypto.randomUUID(),
-      tanggal_pencairan: today.toISOString().split('T')[0],
-      nama_nasabah: formData.nama_nasabah,
-      alamat: formData.alamat,
-      tanggal_lunas: tglLunas.toISOString().split('T')[0],
-      jumlah_hari: Number(formData.jumlah_hari),
-      permohonan_pinjaman: Number(formData.permohonan_pinjaman),
-      target_masuk: 0, // Simplified
-      target_keluar: 0, // Simplified
-      acc_pinjaman: accPinjaman,
-      paraf_acc: formData.paraf_acc,
-      foto_pencairan: photos.pencairan || undefined,
-      foto_promise: photos.promise || undefined,
-      foto_ktp: photos.ktp || undefined,
-      lat,
-      lng,
-      sync_status: 'pending' as const,
-      saldo_awal: saldoAwal,
-      kategori: 'PB'
-    };
-
-    await db.transactions.add(newTx);
-    
-    // Update Storting Drop Kini
-    const todayStr = today.toISOString().split('T')[0];
-    const storting = await db.storting.where('date').equals(todayStr).first();
-    if (storting) {
-      await db.storting.update(storting.id!, {
-        drop_kini: storting.drop_kini + accPinjaman,
-        drop_berjalan: storting.drop_berjalan + accPinjaman
-      });
-    } else {
-      await db.storting.add({
+      const newTx = {
         id: crypto.randomUUID(),
-        date: todayStr,
-        target_lalu: 0, target_kini: 0, target_berjalan: 0,
-        storting_lalu: 0, storting_kini: 0, storting_berjalan: 0,
-        drop_lalu: 0, drop_kini: accPinjaman, drop_berjalan: accPinjaman,
-        persentase: 0,
-        paraf_acc: 'auto',
-        sync_status: 'pending'
-      });
-    }
+        tanggal_pencairan: today.toISOString().split('T')[0],
+        nama_nasabah: formData.nama_nasabah,
+        alamat: formData.alamat,
+        tanggal_lunas: tglLunas.toISOString().split('T')[0],
+        jumlah_hari: Number(formData.jumlah_hari),
+        permohonan_pinjaman: Number(formData.permohonan_pinjaman),
+        target_masuk: 0, // Simplified
+        target_keluar: 0, // Simplified
+        acc_pinjaman: accPinjaman,
+        foto_pencairan: photos.pencairan || undefined,
+        foto_ktp: photos.ktp || undefined,
+        lat,
+        lng,
+        sync_status: 'pending' as const,
+        saldo_awal: saldoAwal,
+        kategori: 'PB',
+        status_acc: 'pending' as const,
+        paraf_acc: ''
+      };
 
-    navigate('/transaksi');
+      await db.transactions.add(newTx);
+      
+      // Update Storting Drop Kini
+      const todayStr = today.toISOString().split('T')[0];
+      const storting = await db.storting.where('date').equals(todayStr).first();
+      if (storting) {
+        await db.storting.update(storting.id!, {
+          drop_kini: storting.drop_kini + accPinjaman,
+          drop_berjalan: storting.drop_berjalan + accPinjaman
+        });
+      } else {
+        await db.storting.add({
+          id: crypto.randomUUID(),
+          date: todayStr,
+          target_lalu: 0, target_kini: 0, target_berjalan: 0,
+          storting_lalu: 0, storting_kini: 0, storting_berjalan: 0,
+          drop_lalu: 0, drop_kini: accPinjaman, drop_berjalan: accPinjaman,
+          persentase: 0,
+          paraf_acc: 'auto',
+          sync_status: 'pending'
+        });
+      }
+
+      navigate('/transaksi');
+    } catch (error) {
+      console.error(error);
+      setIsSubmitting(false);
+    }
   };
 
   const renderCamera = (type: keyof typeof photos, label: string) => {
@@ -123,24 +130,31 @@ export default function TransaksiForm() {
     }
 
     return (
-      <div className="relative rounded-xl overflow-hidden bg-gray-100 border-2 border-dashed border-gray-300 h-48 flex flex-col items-center justify-center hover:bg-gray-200 transition-colors">
-        <input
-          type="file"
-          accept="image/*"
-          capture="environment"
-          className="hidden"
-          id={`cameraInput-${type}`}
-          onChange={(e) => handleFileChange(type, e)}
-        />
-        <label
-          htmlFor={`cameraInput-${type}`}
-          className="flex flex-col items-center gap-3 cursor-pointer w-full h-full justify-center"
-        >
-          <div className="bg-blue-100 text-blue-600 p-4 rounded-full shadow-sm">
-            <Camera size={32} />
-          </div>
-          <span className="text-sm font-bold text-gray-600 text-center px-4">Ambil {label}</span>
-        </label>
+      <div className="relative rounded-xl overflow-hidden bg-gray-50 border-2 border-dashed border-gray-300 p-4 flex flex-col items-center justify-center hover:bg-gray-100 transition-colors">
+        <span className="text-sm font-bold text-gray-600 text-center mb-4">{label}</span>
+        <div className="flex gap-4 w-full">
+          <label className="flex-1 flex flex-col items-center gap-2 cursor-pointer bg-blue-50 p-3 rounded-xl hover:bg-blue-100 transition-colors">
+            <Camera size={24} className="text-blue-600" />
+            <span className="text-xs font-bold text-blue-700">Kamera</span>
+            <input
+              type="file"
+              accept="image/*"
+              capture="environment"
+              className="hidden"
+              onChange={(e) => handleFileChange(type, e)}
+            />
+          </label>
+          <label className="flex-1 flex flex-col items-center gap-2 cursor-pointer bg-purple-50 p-3 rounded-xl hover:bg-purple-100 transition-colors">
+            <ImageIcon size={24} className="text-purple-600" />
+            <span className="text-xs font-bold text-purple-700">Galeri</span>
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => handleFileChange(type, e)}
+            />
+          </label>
+        </div>
       </div>
     );
   };
@@ -178,11 +192,6 @@ export default function TransaksiForm() {
               </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Paraf ACC</label>
-              <input required type="text" value={formData.paraf_acc} onChange={e => setFormData({...formData, paraf_acc: e.target.value})} className="w-full p-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none" />
-            </div>
-
             <button type="submit" className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl mt-4">
               Lanjut ke Foto
             </button>
@@ -196,7 +205,6 @@ export default function TransaksiForm() {
               
               <div className="space-y-4">
                 {renderCamera('pencairan', 'Foto Pencairan')}
-                {renderCamera('promise', 'Foto Surat Promise')}
                 {renderCamera('ktp', 'Foto KTP')}
               </div>
             </div>
@@ -207,10 +215,10 @@ export default function TransaksiForm() {
               </button>
               <button 
                 type="submit" 
-                disabled={!photos.pencairan || !photos.promise || !photos.ktp}
+                disabled={!photos.pencairan || !photos.ktp || isSubmitting}
                 className="flex-1 bg-blue-600 text-white font-bold py-4 rounded-xl disabled:opacity-50 disabled:bg-gray-400"
               >
-                Simpan Data
+                {isSubmitting ? 'Menyimpan...' : 'Simpan Data'}
               </button>
             </div>
           </div>

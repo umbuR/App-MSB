@@ -9,6 +9,7 @@ import { Target, Save } from 'lucide-react';
 export default function StortingPage() {
   const todayStr = format(new Date(), 'yyyy-MM-dd');
   const [targetKini, setTargetKini] = useState('');
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
   const storting = useLiveQuery(
     () => db.storting.where('date').equals(todayStr).first()
@@ -41,11 +42,22 @@ export default function StortingPage() {
         sync_status: 'pending'
       });
     }
-    alert('Target berhasil disimpan');
+    setAlertMessage('Target berhasil disimpan');
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 relative">
+      {/* Alert Modal */}
+      {alertMessage && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl p-6 w-full max-w-sm space-y-4 text-center">
+            <h3 className="font-bold text-lg text-gray-800">Informasi</h3>
+            <p className="text-sm text-gray-600">{alertMessage}</p>
+            <button onClick={() => setAlertMessage(null)} className="w-full py-2 rounded-lg bg-blue-600 text-white font-medium">Tutup</button>
+          </div>
+        </div>
+      )}
+
       <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
         <h2 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
           <Target size={20} className="text-blue-600" /> Target Hari Ini
