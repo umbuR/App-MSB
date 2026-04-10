@@ -4,7 +4,7 @@ import { formatRupiah, tentukanKategori } from '../lib/logic';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { Search, ChevronRight, User, Trash2, CheckCircle, XCircle } from 'lucide-react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function TransaksiList() {

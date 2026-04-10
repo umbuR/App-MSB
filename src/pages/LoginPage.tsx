@@ -1,10 +1,9 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db } from '../lib/db';
 import { useAuth } from '../contexts/AuthContext';
 import { Lock, Mail, AlertCircle } from 'lucide-react';
-
-const logoImg = '/Logo.png';
+import logoImg from '../public/Logo.png';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');

@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../lib/db';
@@ -6,7 +7,6 @@ import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { ArrowLeft, MapPin, Calendar, CreditCard, Camera, Clock, XCircle, CheckCircle, Image as ImageIcon } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { useState } from 'react';
 
 export default function AngsuranDetail() {
   const { id: txId } = useParams();

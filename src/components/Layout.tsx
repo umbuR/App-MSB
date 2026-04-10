@@ -131,13 +131,13 @@ export default function Layout() {
 
       {/* Header */}
       <header className="bg-blue-600 text-white p-4 shadow-md flex justify-between items-center z-10">
-        <div>
+        <Link to="/" className="block hover:opacity-90 transition-opacity">
           <h1 className="text-lg font-bold truncate max-w-[200px]">MITRA SEJAHTERA BERSAMA</h1>
           <p className="text-xs text-blue-200 capitalize">
             Mode: {user?.role || 'Kolektor'} 
             {setting?.nama_kolektor ? ` - ${setting.nama_kolektor}` : ''}
           </p>
-        </div>
+        </Link>
         <button onClick={handleLogout} className="p-2 bg-blue-700 rounded-full hover:bg-blue-800 transition-colors shrink-0 ml-2">
           <LogOut size={18} />
         </button>
